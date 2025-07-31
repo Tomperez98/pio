@@ -1,0 +1,7 @@
+line-length = 100
+
+[lint.isort]
+force-wrap-aliases = true
+combine-as-imports = true
+required-imports = ["from __future__ import annotations"]
+case-sensitive = true
