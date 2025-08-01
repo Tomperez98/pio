@@ -3,7 +3,7 @@ from functools import partial
 import inspect
 from queue import Queue
 import threading
-from typing import Any, assert_never
+from typing import Any
 import asyncio
 from concurrent.futures import Future, ThreadPoolExecutor
 

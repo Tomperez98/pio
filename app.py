@@ -3,11 +3,12 @@ from __future__ import annotations
 import pio
 
 
-
-
 def foo() -> pio.Computation[str]:
-    v = yield from pio.typesafe(bar(5))
-    return v
+    try:
+        yield from pio.typesafe(bar(5))
+    except RuntimeError:
+        pass
+    return "done"
 
 
 def bar(n: int) -> pio.Computation[int]:
@@ -22,7 +23,6 @@ async def baz(string: str) -> str:
 
 def qux(string: str) -> str:
     raise RuntimeError()
-
 
 
 try:
