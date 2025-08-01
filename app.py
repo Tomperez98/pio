@@ -9,12 +9,19 @@ def foo() -> pio.Computation[str]:
 
 
 def bar(n: int) -> pio.Computation[int]:
-    v = yield from pio.typesafe(lambda: baz("hello, world!"))
+    yield from pio.typesafe(baz("hello, world!"))
+    yield from pio.typesafe(lambda: qux("hello, world!"))
     return n
 
 
-def baz(string: str) -> str:
+async def baz(string: str) -> str:
     return string
 
 
-print(pio.run(foo).result())
+def qux(string: str) -> str:
+    return string
+
+
+print(pio.run(baz("hello, world")))
+print(pio.run(lambda: qux("hello, world")))
+print(pio.run(foo()))
