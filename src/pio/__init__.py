@@ -24,6 +24,7 @@ _loop = asyncio.new_event_loop()
 _async_executor = threading.Thread(target=_asyncio_loop, args=(_loop,), daemon=True)
 _async_executor.start()
 
+
 _sync_executor = ThreadPoolExecutor()
 
 _q = Queue[tuple[Generator[Computation[Any], Any, Any], Future, Any | Exception | None]]()
@@ -32,33 +33,35 @@ _q = Queue[tuple[Generator[Computation[Any], Any, Any], Future, Any | Exception 
 def _enqueue_back(gen: Generator[Computation[Any], Any, Any], f: Future, child_f: Future):
     assert child_f.done()
     try:
-        next = child_f.result()
+        send_val = child_f.result()
     except Exception as e:
-        next = e
-    _q.put((gen, f, next))
+        send_val = e
+    _q.put((gen, f, send_val))
 
 
 def _scheduler() -> None:
     while True:
-        gen, f, next = _q.get()
+        gen, f, send_val = _q.get()
         try:
-            if isinstance(next, Exception):
-                yieldable = gen.throw(next)
+            if isinstance(send_val, Exception):
+                yieldable = gen.throw(send_val)
             else:
-                yieldable = gen.send(next)
+                yieldable = gen.send(send_val)
         except StopIteration as e:
             f.set_result(e.value)
+            continue
         except Exception as e:
             f.set_exception(e)
-        else:
-            if inspect.isgenerator(yieldable):
-                child_f = Future()
-                _q.put((yieldable, child_f, None))
-                child_f.add_done_callback(partial(_enqueue_back, gen, f))
-            elif inspect.iscoroutine(yieldable):
-                _submit_async(yieldable).add_done_callback(partial(_enqueue_back, gen, f))
-            elif inspect.isfunction(yieldable):
-                _submit_sync(yieldable).add_done_callback(partial(_enqueue_back, gen, f))
+            continue
+
+        if inspect.isgenerator(yieldable):
+            child_f = Future()
+            _q.put((yieldable, child_f, None))
+            child_f.add_done_callback(partial(_enqueue_back, gen, f))
+        elif inspect.iscoroutine(yieldable):
+            _submit_async(yieldable).add_done_callback(partial(_enqueue_back, gen, f))
+        elif inspect.isfunction(yieldable):
+            _submit_sync(yieldable).add_done_callback(partial(_enqueue_back, gen, f))
 
 
 _gen_executor = threading.Thread(target=_scheduler, daemon=True)
