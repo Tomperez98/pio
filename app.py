@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import pio
 
-
 def foo() -> pio.Computation[str]:
     try:
         yield from pio.typesafe(bar(5))
