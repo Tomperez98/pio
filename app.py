@@ -25,16 +25,16 @@ def qux(string: str) -> str:
 
 
 try:
-    print(pio.run(bar(10)))
+    print(pio.run(bar(10)).result())
 except Exception as e:
     print(f"Error in bar(10): {type(e)}")
 
 try:
-    print(pio.run(lambda: qux("hello, world")))
+    print(pio.run(lambda: qux("hello, world")).result())
 except Exception as e:
     print(f"Error in qux('hello, world'): {type(e)}")
 
 try:
-    print(pio.run(foo()))
+    print(pio.run(foo()).result())
 except Exception as e:
     print(f"Error in foo(): {type(e)}")

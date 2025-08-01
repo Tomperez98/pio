@@ -76,13 +76,13 @@ def _submit_sync[T](fn: Callable[[], T]) -> Future[T]:
     return _sync_executor.submit(fn)
 
 
-def run[T](comp: Computation[T]) -> T:
+def run[T](comp: Computation[T]) -> Future[T]:
     if inspect.isgenerator(comp):
         f = Future()
         _q.put((comp, f, None))
-        return f.result()
+        return f
     if inspect.iscoroutine(comp):
-        return _submit_async(comp).result()
+        return _submit_async(comp)
     if inspect.isfunction(comp):
-        return _submit_sync(comp).result()
+        return _submit_sync(comp)
     raise RuntimeError(f"comp={comp} is not valid")
