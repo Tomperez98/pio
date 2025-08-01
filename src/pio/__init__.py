@@ -32,6 +32,7 @@ def _submit_async[T](coro: Coroutine[Any, Any, T]) -> Future[T]:
 def _submit_sync[T](fn: Callable[[], T]) -> Future[T]:
     return _sync_executor.submit(fn)
 
+
 def run[T](comp: Computation[T]) -> T:
     if inspect.isgenerator(comp):
         raise NotImplementedError()
