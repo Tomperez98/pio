@@ -1,8 +1,21 @@
 line-length = 100
 
+[lint]
+ignore = [
+    "ANN401",
+    "ARG002",
+    "BLE001",
+    "C901",
+    "COM812",
+    "D",
+    "INP001",
+    "PLR0912",
+    "PLR0913",
+    "S101",
+    "S311",
+]
+select = ["ALL"]
 
 [lint.isort]
-force-wrap-aliases = true
 combine-as-imports = true
 required-imports = ["from __future__ import annotations"]
-case-sensitive = true
