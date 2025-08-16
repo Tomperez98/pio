@@ -41,7 +41,7 @@ def test_aio_system() -> None:
 
     cqes: list[CQE] = []
     while len(cqes) < i:
-        cqes.extend(aio.dequeue(2))
+        cqes.extend(aio.dequeue(i))
 
     for cqe in cqes:
         cqe.cb(cqe.v)
@@ -81,5 +81,3 @@ def test_aio_dst() -> None:
 
     for cqe in cqes:
         cqe.cb(cqe.v)
-
-    aio.shutdown()

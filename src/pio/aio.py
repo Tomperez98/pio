@@ -94,12 +94,12 @@ class AIODst:
         return cqe.v
 
     def start(self) -> None:
-        for subsystem in self._subsystems.values():
-            subsystem.start()
+        msg = "dst shouldn't be spawning workers"
+        raise RuntimeError(msg)
 
     def shutdown(self) -> None:
-        for subsystem in self._subsystems.values():
-            subsystem.shutdown()
+        msg = "dst shouldn't have spawned workers"
+        raise RuntimeError(msg)
 
     def flush(self, time: int) -> None:
         flush: dict[str, list[SQE]] = {}
